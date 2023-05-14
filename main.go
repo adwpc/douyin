@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/wwengg/douyin/fay/impl"
-	"github.com/wwengg/douyin/model"
-	"github.com/wwengg/douyin/proto"
-	"github.com/wwengg/douyin/utils"
 	"io"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/wwengg/douyin/fay/impl"
+	"github.com/wwengg/douyin/model"
+	"github.com/wwengg/douyin/proto"
+	"github.com/wwengg/douyin/utils"
 
 	"github.com/elazarl/goproxy"
 )
@@ -19,7 +20,7 @@ import (
 func main() {
 	utils.ConfigureCA()
 	proxy := goproxy.NewProxyHttpServer()
-	proxy.Verbose = false
+	proxy.Verbose = true
 
 	fayProxyServer := impl.NewFayProxyServer()
 	go fayProxyServer.StartWebsocket()
@@ -102,7 +103,7 @@ func main() {
 		return err
 	}
 
-	proxy.OnRequest(goproxy.ReqHostIs("webcast.amemv.com:443", "frontier-im.douyin.com:443", "webcast100-ws-web-lq.amemv.com:443", "webcast3-ws-web-lf.douyin.com:443", "webcast3-ws-web-hl.douyin.com:443")).
+	proxy.OnRequest(goproxy.ReqHostIs("webcast.amemv.com:443", "frontier-im.douyin.com:443", "webcast100-ws-web-lq.amemv.com:443", "webcast3-ws-web-lf.douyin.com:443", "webcast3-ws-web-hl.douyin.com:443", "webcast3-ws-web-lq.douyin.com")).
 		HandleConnect(goproxy.AlwaysMitm)
 
 	proxy.OnResponse(goproxy.UrlHasPrefix("httpswebcast.amemv.com:443/webcast/room/create/")).DoFunc(
@@ -124,6 +125,7 @@ func main() {
 		},
 	)
 	log.Println("软件准备就绪，请启动【直播伴侣】并且点击【开始直播】")
+	log.Println("listen on :8001")
 	log.Fatal(http.ListenAndServe(":8001", proxy))
 }
 
